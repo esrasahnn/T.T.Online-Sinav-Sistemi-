@@ -1,0 +1,113 @@
+﻿@model IEnumerable<ExamDto>
+
+<h1 style="text-align:center; font-family:Oswald">Sınavlar</h1>
+
+<div class="row">
+    <div class="col-12 col-sm-10 col-md-12">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ResultMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ResultMessage"]
+            </div>
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="Exams" asp-action="Create">
+                Yeni Ekle
+            </a>
+            <br />
+            <br />
+        </div>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Tarih</th>
+                    <th>Sınav Adı</th>
+                    <th>Sınav Durumu</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var exam in Model)
+                {
+                    <tr>
+                        <td>@exam.Id</td>
+                        <td>@exam.Date</td>
+                        <td>@exam.Name</td>
+                        <td>@exam.Status</td>
+                        <td class="text-end">
+                            @if (exam.Status == ExamStatus.Draft)
+                            {
+                                <form asp-action="Activate" method="post" class="active-form d-inline-block">
+                                    <input type="hidden" value="@exam.Id" name="id">
+                                    <button class="btn btn-outline-success btn-sm">Aktif Et</button>
+                                </form>
+                            }
+                            else  
+                            {
+                                <form asp-action="Passive" method="post" class="passive-form d-inline-block">
+                                    <input type="hidden" value="@exam.Id" name="id">
+                                    <button class="btn btn-outline-danger btn-sm">Pasif Et</button>
+                                </form>
+                            }
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Exams" asp-action="Update" asp-route-id=@exam.Id>Düzenle</a>
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="ExamSections" asp-action="Index" asp-route-ExamId=@exam.Id>Sınav Bölümleri</a>
+                            <form asp-controller="Exams" asp-action="Delete" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@exam.Id" name="id">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Dikkat!! Bu kayıt silinecek.Devam etmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+
+        let activeForms = document.getElementsByClassName('active-form');
+        for (let i = 0; i < activeForms.length; i++) {
+            activeForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Sınav aktif edilecek.Devam etmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+
+        let passiveForms = document.getElementsByClassName('passive-form');
+        for (let i = 0; i < passiveForms.length; i++) {
+            passiveForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Sınav pasif hale getirilecek.Devam etmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+}

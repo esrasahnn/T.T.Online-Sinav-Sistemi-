@@ -1,0 +1,80 @@
+﻿@model IEnumerable<ExamSectionSummary>
+
+<h1 style="text-align:center; font-family:Oswald">@ViewBag.ExamName Sınavı Bölümleri</h1>
+
+<div class="row">
+    <div class="col-12 col-sm-10 col-md-12">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ResultMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["ResultMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="ExamSections" asp-action="Create" asp-route-id="@ViewBag.ExamId">
+                Yeni Ekle
+            </a>
+            <br />
+            <br />
+        </div>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Sınav Bölümü</th>
+                    <th>Soru Sayısı</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var examSection in Model)
+                {
+                    <tr>
+                        <td>@examSection.Id</td>
+                        <td>@examSection.LessonName</td>
+                        <td>@examSection.Questions.Count()</td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="ExamSections" asp-action="Update" asp-route-id="@examSection.Id">Düzenle</a>
+                            <form asp-action="Delete" asp-controller="ExamSections" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@examSection.Id" name="id">
+                                <input type="hidden" value="@ViewBag.ExamId" name="examid">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Dikkat!! Bu kayıt silinecek.Devam etmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+
+    </script>
+}

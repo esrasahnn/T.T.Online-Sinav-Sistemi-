@@ -1,0 +1,77 @@
+﻿@model ExamDto
+
+<h1>Öğrenci Sınav Girişi</h1>
+<div class="row me-5">
+    <div id="panel1" class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        <form asp-controller="StudentExams" asp-action="StudentSearch" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">T.C.Kimlik No:</label>
+                <input type="text" id="name" name="IdentityNumber" class="form-control" />
+            </div>
+            <div class="mb-12">
+                <div class="text-end">
+                    <button class="btn btn-outline-success">
+                        Ara
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (ViewBag.Student != null)
+    {
+        StudentDto student = (StudentDto)ViewBag.Student;
+        <div id="panel2" class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Öğrenci No</th>
+                        <th>Adı</th>
+                        <th>Soyadı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@student.StudentNumber</td>
+                        <td>@student.FirstName</td>
+                        <td>@student.LastName</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <form asp-action="Exam" asp-controller="StudentExams" method="get" class="d-inline-block">
+            <input type="hidden" name="StudentId" value="@student.Id" />
+            <div id="panel3" class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="mb-3">
+                <label asp-for="Id" class="form-label">Sınav</label>
+                <select asp-for="Id" asp-items="ViewBag.ExamName" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-12">
+                <div class="text-end">
+                    
+                        <button class="btn btn-outline-success" type="submit">
+                            Kaydet ve İlerle
+                        </button>
+                    
+
+                </div>
+            </div>
+        </div>
+        </form>
+    }
+</div>

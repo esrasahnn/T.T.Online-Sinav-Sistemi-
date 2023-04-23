@@ -1,0 +1,81 @@
+﻿@model IEnumerable<StudentDto>
+
+<h1 style="text-align:center; font-family:Oswald">Öğrenciler</h1>
+
+<div class="row">
+    <div class="col-12 col-sm-10 col-md-12">
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ResultMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["ResultMessage"]
+            </div>
+        }
+        <div class="float-end">
+            <a class="btn btn-outline-primary btn-sm" asp-controller="Students" asp-action="Create">
+                Yeni Ekle
+            </a>
+            <br />
+            <br />
+        </div>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>T.C.Kimlik No</th>
+                    <th>Adı</th>
+                    <th>Soyadı</th>
+                    <th>Doğum Tarihi</th>
+                    <th>Telefon No</th>
+                    <th>Öğrenci No</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.Id</td>
+                        <td>@student.IdentityNumber</td>
+                        <td>@student.FirstName</td>
+                        <td>@student.LastName</td>
+                        <td>@student.DateOfBirth</td>
+                        <td>@student.PhoneNumber</td>
+                        <td>@student.StudentNumber</td>
+                        <td class="text-end">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Students" asp-action="Update" asp-route-id=@student.Id>Düzenle</a>
+                            <form asp-action="Delete" method="post" class="delete-form d-inline-block">
+                                <input type="hidden" value="@student.Id" name="id">
+                                <button class="btn btn-outline-warning btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+@section Scripts{
+    <script>
+        let deleteForms = document.getElementsByClassName('delete-form');
+        for (let i = 0; i < deleteForms.length; i++) {
+            deleteForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Dikkat!! Bu kayıt silinecek.Devam etmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿@model LessonDto
+
+<h1>Ders Ekleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form asp-controller="Lessons" asp-action="Create" method="post">
+            <div class="row mb-3">
+                <label for="name" class="col-3 form-label">Ders Adı:</label>
+                <input type="text" id="name" name="Name" class="col-9 form-control" />
+            </div>
+            <div class="row mb-3">
+                <label for="Description" class="col-3 form-label">Ders İçeriği:</label>
+                <input type="text" id="name" name="Description" class="col-9 form-control" />
+            </div>
+            <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

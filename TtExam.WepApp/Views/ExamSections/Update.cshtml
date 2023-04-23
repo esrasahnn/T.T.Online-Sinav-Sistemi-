@@ -1,0 +1,137 @@
+﻿@model ExamSectionSummary
+
+<h1>Sınav Bölümü Güncelleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        
+        <form asp-controller="ExamSections" asp-action="Update" method="post">
+            <input type="hidden" name="ExamId" value="@Model.ExamId" />
+            <div class="mb-3">
+              <label for="name" class="form-label">Ders Adı:</label>
+                <select asp-for="LessonId" asp-items=" ViewBag.LessonSelectList" class="form-select">
+                    <option value="">@Model.LessonName</option>
+                </select>
+            </div>
+
+            <div id="question-hiddens" style="display:none;">
+                @{
+                    if (Model.Questions!= null)
+                    {                        
+                        int i = 0;
+                        foreach (var question in Model.Questions)
+                        {
+                            <input type="hidden" name="Questions[@(i++)].Id" value="@question.Id" />
+                        }
+                    }
+                }
+            </div>
+
+           
+            <table id="questions" class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Soru Cümlesi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        IEnumerable<QuestionDto> questions = ViewBag.Questionlist as List<QuestionDto>;
+
+                        foreach (var question in questions)
+                        {
+                            <tr class="@(Model.Questions.Any(q => q.Id == question.Id) ? "selected" : string.Empty)" data-questionId="@question.Id">
+                                <td>
+                                    @question.Sentence
+                                </td>
+                            </tr>
+                        }
+                    }
+                 
+                </tbody>
+
+            </table>
+            <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#LessonId").change(function () {
+                $("#questions tbody").html(null);
+                $("#question-hiddens").html(null);
+                $.ajax({
+                    url: '@Url.Action("QuestionsByLesson", "Questions")',
+                    type: 'post',
+                    data: { 'lessonId': $(this).val() },
+                    dataType: 'json',
+                    success: function (questions) {
+                        for (let i = 0; i < questions.length; i++) {
+                            let question = questions[i];
+                            let tableRow = $('<tr>');
+                            tableRow.data("questionId", question.id);
+                            let questionSentence = $('<td>').text(question.sentence);
+
+                            tableRow.append(questionSentence);
+                            $("#questions tbody").append(tableRow);
+                        }
+                        bindQuestionTableRowClick();
+                    }
+                })
+            });
+
+            bindQuestionTableRowClick();
+        });
+        function ArrangeQuestions() {
+            $("#question-hiddens").html(null);
+            let i = 0;
+            $("#questions tbody tr.selected").each(function () {
+                let questionHidden = $('<input>');
+                questionHidden.attr("type", "hidden");
+                questionHidden.attr("name", "Questions[" + i + "].Id")
+                questionHidden.attr("value", $(this).data("questionId"));
+                $("#question-hiddens").append(questionHidden);
+                i++;
+            });
+        }
+
+        function bindQuestionTableRowClick() {
+            $("#questions tbody tr").each(function(){
+                $(this).click(function () {
+                    $(this).toggleClass("selected");
+                    ArrangeQuestions();
+                });
+            });
+        }
+    </script>
+
+    <style>
+        tr.selected {
+            background-color: #4ee318a8;
+        }
+    </style>
+}

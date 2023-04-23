@@ -1,0 +1,57 @@
+﻿@model QuestionDto
+
+<h1>Soru Ekleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 mb-5">
+      
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+                </div>
+        }
+
+        <form asp-controller="Questions" asp-action="Create" method="post">
+              <div class="mb-3">
+                <label asp-for="LessonId" class="form-label">Ders Adı:</label>
+                <select asp-for="LessonId" asp-items=" ViewBag.LessonSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Soru:</label>
+                <input type="text" id="name" name="Sentence" class="form-control" />
+            </div>
+            <h4>Cevaplar</h4>
+            @for (int i = 0; i < Model.Answers.Count; i++)
+            {
+                <div class="mb-3">
+                    <label for="name" class="form-label">Cevap @(i + 1):</label>
+                    <input type="text" name="Answers[@i].Text" class="form-control" />
+                    <div class="form-check">
+                        <input type="checkbox" asp-for="@Model.Answers[i].IsCorrect" class="form-check-input" />
+                        <label class="form-check-label" asp-for="@Model.Answers[i].IsCorrect">
+                            Doğru Cevap
+                        </label>
+                    </div>
+                 </div>
+            }
+             <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

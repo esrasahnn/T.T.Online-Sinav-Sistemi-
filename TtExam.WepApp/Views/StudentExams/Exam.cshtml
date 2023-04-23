@@ -1,0 +1,78 @@
+﻿@model ExamDto
+
+<h4 style="color:darkgreen; font-family:'Comic Sans MS'; text-align:left">Sınavda başarılar dilerim...</h4>
+<h2 style="color:black; text-align:center; font-weight:bold">@Model.Name Sınavı</h2>
+<br />
+<div class="row">
+    <div id="panel1" class="container">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form method="post" asp-action="ExamFinish" asp-controller="StudentExams">
+            @{
+                int q = 0;
+                foreach (var examSection in Model.ExamSections)
+                {
+                    <input type="hidden" name="ExamId" value="@Model.Id" />
+                    <input type="hidden" name="StudentId" value="@ViewBag.StudentId" />
+                    <h5 style="background-color:darkseagreen;font-family:'Agency FB'; text-align:center; font-weight:bold; border-block:double">@examSection.LessonName</h5>
+                    <ol type="1">
+
+                        @foreach (var question in examSection.Questions)
+                        {
+                            <li>
+                                @question.Sentence
+                                <input type="hidden" name="Questions[@q].Id" value="@question.Id" />
+                                <br />
+                                <ol type="A">
+                                    @foreach (var answer in question.Answers)
+                                    {
+                                        <li>
+                                            <input type="radio" name="Questions[@q].Answer.Id" value="@answer.Id" />
+                                            @answer.Text
+                                        </li>
+
+                                    }
+                                </ol>
+                            </li>
+
+                            q++;
+                        }
+
+                    </ol>
+                }
+            }
+            <div class="finish form d-flex justify-content-end mb-4">
+                <input class="btn btn-outline-success btn-lg btn-block" type="submit" value="Sınavı Bitir" />
+            </div> <br /><br />
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        let finishForms = document.getElementsByClassName('finish-form');
+        for (let i = 0; i < finishForms.length; i++) {
+            finishForms[i].addEventListener('submit', function (e) {
+
+                let isConfirmed = confirm("Dikkat!! Bitirmek istiyor musunuz?");
+                if (!isConfirmed) {
+
+                    e.preventDefault();
+                }
+            });
+        }
+
+    </script>
+}

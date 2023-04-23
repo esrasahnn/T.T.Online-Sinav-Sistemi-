@@ -1,0 +1,103 @@
+﻿@model ExamSectionSummary
+
+<h1>Sınav Bölümü Ekleme</h1>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form asp-controller="ExamSections" asp-action="Create" method="post" asp-route-Id="0">
+            <input type="hidden" name="ExamId" value="@Model.ExamId" />
+            <div class="mb-3">
+                <label asp-for="LessonId" class="form-label">Ders Adı:</label>
+                <select asp-for="LessonId" asp-items=" ViewBag.LessonSelectList" class="form-select">
+                    <option value="">.:: Lütfen Seçiniz ::..</option>
+                </select>
+            </div>
+
+            <div id="question-hiddens" style="display:none;"></div>
+
+            <table id="questions" class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Soru Cümlesi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+
+            </table>
+            <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#LessonId").change(function () {
+                $("#questions tbody").html(null);
+                $("#question-hiddens").html(null);
+                $.ajax({
+                    url: '@Url.Action("QuestionsByLesson", "Questions")',
+                    type: 'post',
+                    data: { 'lessonId': $(this).val() },
+                    dataType: 'json',
+                    success: function (questions) {
+                        debugger;
+                        for (let i = 0; i < questions.length; i++) {
+                            let question = questions[i];
+                            let tableRow = $('<tr>');
+                            tableRow.data("questionId", question.id);
+                            let questionSentence = $('<td>').text(question.sentence);
+
+                            tableRow.append(questionSentence);
+                            $("#questions tbody").append(tableRow);
+
+                            tableRow.click(function () {
+                                $(this).toggleClass("selected");
+                                ArrangeQuestions();
+                            });
+                        }
+                    }
+                })
+            });
+        });
+        function ArrangeQuestions() {
+            $("#question-hiddens").html(null);
+            let i = 0;
+            $("#questions tbody tr.selected").each(function () {
+                let questionHidden = $('<input>');
+                questionHidden.attr("type", "hidden");
+                questionHidden.attr("name", "Questions[" + i + "].Id")
+                questionHidden.attr("value", $(this).data("questionId"));
+                $("#question-hiddens").append(questionHidden);
+                i++;
+            });
+        }
+    </script>
+
+    <style>
+        tr.selected{  background-color: #4ee318a8;}
+    </style>
+}

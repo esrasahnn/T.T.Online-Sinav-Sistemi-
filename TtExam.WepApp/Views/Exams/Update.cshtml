@@ -1,0 +1,41 @@
+﻿@model ExamDto
+
+<h5>Sınav Güncelleme</h5>
+<div action="row">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+        @if (TempData.ContainsKey("SuccessMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <div class="alert alert-success">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form asp-controller="Exams" asp-action="Update" method="post">
+            <div class="mb-3">
+                <label for="start" class="form-label">Sınav Tarihi</label>
+                <input asp-for="Date" type="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")"/>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Sınav Adı:</label>
+                <input type="text" id="name" name="Name" class="form-control" value="@Model.Name" />
+            </div>
+            <div class="mb-12">
+                <div class="text-end">
+                    <a class="btn btn-outline-warning" asp-action="Index">İptal</a>
+                    <button class="btn btn-outline-success">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
